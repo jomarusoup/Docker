@@ -102,11 +102,11 @@ $ docker image pull {localhost_IP}:5000/{Image:Tag}
 
 ## 1. SSL 인증서 생성
 
-'/home/xt_kb_linux/docker/registry/certs' 디렉토리에 SSL 인증서와 관련된 파일을 저장
+'/home/user/docker/registry/certs' 디렉토리에 SSL 인증서와 관련된 파일을 저장
 
 ```shell
-$ mkdir /home/xt_kb_linux/docker/registry/certs
-$ cd /home/xt_kb_linux/docker/registry/certs
+$ mkdir /home/user/docker/registry/certs
+$ cd /home/user/docker/registry/certs
 ```
 
 ### 1.1. Private Key를 생성
