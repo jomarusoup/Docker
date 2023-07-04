@@ -9,16 +9,17 @@ $ yum install -y yum-utils
 
 # add repo
 $ yum-config-manager \
-    --add-repo \
-    https://download.docker.com/linux/centos/docker-ce.repo
+> --add-repo \
+> https://download.docker.com/linux/centos/docker-ce.repo
+
+$ yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 
 # install docker
-$ yum install docker-ce docker-ce-cli containerd.io
-
 # try to add 
 # '--allowerasing' to command line to replace conflicting packages 
 # '--skip-broken' to skip uninstallable packages 
 # '--nobest' to use not only best candidate packages
+$ yum install docker-ce docker-ce-cli containerd.io
 
 # docker start & reboot auto start
 $ systemctl start docker
@@ -32,6 +33,7 @@ $ docker version
 
 ```shell
 $ vi /etc/docker/daemon.json
+
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
   "log-driver": "json-file",
@@ -40,7 +42,7 @@ $ vi /etc/docker/daemon.json
   },
   "storage-driver": "overlay1",
   # 이미지를 저장할 레지스트리 컨테이너가 위치한 IP
-  "insecure-registries": ["Registry_Host_IP:Port", "localhost:5000"]
+  "insecure-registries": ["Registry_Host_IP:Port"]
 }
 
 # deamon reload
@@ -100,7 +102,7 @@ tail -f /dev/null
 
 ## 이미지 빌드
 
-이미지 빌드시 /home/xt_kb_linux에서 명령어 실행
+이미지 빌드시 /home/user에서 명령어 실행
 
 ```shell
 $ docker build -t {Images_Name:Tag} -f {Dockerfile_Dir} .
@@ -108,15 +110,3 @@ $ docker build -t {Images_Name:Tag} -f {Dockerfile_Dir} .
 
 - `-t`: 이미지의 이름:TAG 설정, TAG를 주지 않으면 latest로 생성
 - `-f`: Dockerfile의 절대경로
-
-## #해당 컨테이너 bash로 접속
-
-## 0-6. 컨테이너의 내용을 이미지로 옮기는 명령어
-
-|    명령어    | Container ID | Image Name:TAG |
-| :-----------: | :----------: | :------------: |
-| docker commit | 64d60d3dd306 |   ubuntu:git   |
-
-```shell
-$ docker commit 64d60d3dd306 ubuntu:git
-```

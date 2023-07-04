@@ -1,5 +1,4 @@
-# 1. docker basic commandline
-
+# 1. Docker basic command
 | Command                                         | Explain                                             |
 | :---------------------------------------------- | :-------------------------------------------------- |
 | `docker search {Image_Name}`                  | 이미지 이름으로 docker hub에서 검색                 |
@@ -48,6 +47,7 @@ $ docker run {option} {Image:Tag}
 
 # 컨테이너 생성
 $ docker create {option} {Image:Tag}
+
 # docker create로 생성된 혹은 실행 중인 컨테이너 접근
 $ docker attach {Container_Name}
 ```
@@ -180,7 +180,7 @@ $ docker run -itd --init --privileged --name {container_name} -v {Host_Dir}:{Con
 --cpuset-cpus
 ```
 
-- Host에 여러개의 CPU가 조재할 경우 컨테이너가 특정 CPU만 사용하도록 제한
+- Host에 여러개의 CPU가 존재할 경우 컨테이너가 특정 CPU만 사용하도록 제한
 - `--cpuset-cups=2` : 2번 CPU만 사용용
 
 ```shell
@@ -188,7 +188,7 @@ $ docker run -itd --init --privileged --name {container_name} -v {Host_Dir}:{Con
 ```
 
 - 메모리 제한 설정
-- <숫자><단위> 형식이며 단위는 b, k, m, g 를 사용
+- 단위: b, k, m, g
 
 ```shell
 --security-opt
@@ -317,10 +317,6 @@ $ docker run -it --name {Container_Name} -p {Host_Port:Cotainer_Port} -p {Host_P
 - Isolated Container : 서버와 데이터베이스를 분리
   - 도커의 이미지 관리와 컴포넌트의 독립성 유지에 유리
   - 도커에서 공식으로 권장하는 구조
-
-
-
-
 ## docker commit
 
 - Docker Conatiner에서 변경된 내용을 새로운 이미지로 만드는 명령어

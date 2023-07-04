@@ -86,6 +86,27 @@ $ docker image pull {localhost_IP}:5000/{Image:Tag}
 - 도커 데몬은 HTTPS를 사용하지 않으면 레지스트리 컨테이너에 접근이 불가능
 - HTTPS를 사용하기 위한 인증서 적용 필요
 - HTTPS를 사용하지 않는 레지스트리 컨테이너에 접근하지 못하도록 설정
+```shell
+$ vi /etc/docker/daemon.json
+
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "99m"
+  },
+  "storage-driver": "overlay1",
+  # 이미지를 저장할 레지스트리 컨테이너가 위치한 IP
+  "insecure-registries": ["Registry_Host_IP:Port"]
+}
+
+# deamon reload
+$ sudo systemctl daemon-reload
+
+# docker restart
+$ sudo systemctl restart docker
+```
+
 
 ### Not use HTTPS
 - 도커 데몬에 --insecure-registry 옵션을 추가
@@ -147,7 +168,7 @@ $ echo subjectAltName=IP:{registry_Server_IP},IP:127.0.0.1 > extfile.cnf
 $ openssl x509 -req -days 800 -signkey server.key -in server.csr -out server.crt -extfile extfile.cnf
 ```
 
-## 2. SSL 인증서 적용 [@Registry Server]
+## 2. SSL 인증서 적용 [Master Node]
 
 - SSL 인증서를 생성 후 인증서를 각 서버와 클라이언트 단에 적용
 - 서버단에서는 생성된 인증서를 사용해 registry 컨테이너를 다시 시작
@@ -179,18 +200,12 @@ $ docker run -d --name={registry_Container_Name} -v {host_Cert_Dir}:{registry_Ce
 - `-e REGISTRY_HTTP_TLS_KEY={registry_Cert_Dir}/server.key` : TLS 인증서의 개인 키 파일의 경로를 설정
 - `-p 5000:5000`: 호스트 머신의 5000번 포트와 컨테이너 내부의 5000번 포트를 연결
 
-### 2.3. registry 컨테이너가 정상적으로 실행되었는지 확인합니다.
+## 3. SSL 인증서 적용
 
-```shell
-$ docker ps 
-```
+- 원격 Registry에 이미지를 업/다운 로드 하려는 노드에서의 SSL 인증서 설정을 수행
 
-## 3. SSL 인증서 적용 [@Client]
-
-- 원격 Registry에 이미지를 업/다운 로드 하려는 클라이언트에서의 SSL 인증서 설정을 수행
-
-### 3.1. `scp`를 통해 Registry서버(master)에서 생성했던 SSL 인증서를 클라이언트(worker)로 이동
-
+### 3.1. Master에서 Worker로 인증서 이동
+-  `scp`를 통해 Registry서버(master)에서 생성했던 SSL 인증서를 클라이언트(worker)로 이동
 ```shell
 $ scp {master_node_ID}@{master_node_IP}:{master_Dir} {worker_Dir}
 ```
@@ -210,7 +225,7 @@ $ update-ca-trust
 $ sudo service docker restart
 ```
 
-## 4. Image Pull/Push
+## 4. Image Pull/Push/Delete
 
 - 업로드할 이미지의 tag를 {registryServerIP}:{registryServerPort}/{imageName} 과 같은 형식으로 변경
 
@@ -227,5 +242,10 @@ $ docker push {Image}
 - registry 서버 주소를 입력하실때 https를 사용
 
 ```shell
-$ curl -X GET https://{registryServerIP}:{registryServerPort}/v2/_catalog
+$ curl -X GET https://{Registry_Server_IP}:{Registry_Server_Port}/v2/_catalog
+```
+
+- Docker registry에 있는 이미지 삭제
+```shell
+$ $ curl -X DELETE https://{Registry_Server_IP}:{Registry_Server_Port}/v2/{Image_name}/manifests/{Image_tag}
 ```
