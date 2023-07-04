@@ -1,5 +1,6 @@
 # Docker Images
-
+- 모든 컨테이너는 이미지를 기반으로 생성
+- Docker hub(중앙 이미지 저장소)에서 이미지 pull/push
 ## docker image create
 
 - 특정 어플리케이션을 위한 특정 개발 환경 구축 후 사용자만의 이미지 직접 생성
