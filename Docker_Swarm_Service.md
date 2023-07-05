@@ -1,5 +1,5 @@
 # Docker Swarm Service
-- Docker Swarm 제어 단위가 Service
+- Service : Docker Swarm 제어 단위
 - Service는 컨테이너의 집합 단위
 - Service 제어 시 Service에 존재하는 모든 Container에 적용
 - Service 내부에 1개 이상의 컨태이너 존재 가능
