@@ -1,4 +1,5 @@
 # 사설 도커 이미지 레지스트리 구성
+- 생성한 이미지를 다른 도커 엔진에 배포하기 위한 이미지 저장소 생성
 
 ## 1. 도커 허브에서 도커 레지스트리 공식 이미지 검색
 
@@ -29,6 +30,8 @@ $ docker run -d --name={Container_Name} \
 
 $ docker run -d --name={Container_Name} -p 5000:5000 --restart=always registry
 ```
+ - Registry Container는 5000번 포트를 사용
+ - Container 5000번 포트와 Host의 5000번 포트를 연결
 
 ## 4. 사설 레지스트리의 이미지 레포지토리 목록 조회
 
@@ -93,18 +96,7 @@ $ docker image pull {localhost_IP}:5000/{Image:Tag}
 - 미리 정의된 계정으로 로그인하도록 설정함으로써 접근을 제한 가능
 
 ```shell
-$ vi /etc/docker/daemon.json
 
-{
-  "exec-opts": ["native.cgroupdriver=systemd"],
-  "log-driver": "json-file",
-  "log-opts": {
-    "max-size": "99m"
-  },
-  "storage-driver": "overlay1",
-  # 이미지를 저장할 레지스트리 컨테이너가 위치한 IP
-  "insecure-registries": ["Registry_Host_IP:Port"]
-}
 
 # deamon reload
 $ sudo systemctl daemon-reload
@@ -204,13 +196,15 @@ $ docker run -d \
 > -e REGISTRY_HTTP_TLS_CERTIFICATE={registry_Cert_Dir}/server.crt \
 > -e REGISTRY_HTTP_TLS_KEY={registry_Cert_Dir}/server.key -p 5000:5000 registry
 
-$ docker run -d --name={registry_Container_Name} -v {host_Cert_Dir}:{registry_Cert_Dir} -e REGISTRY_HTTP_ADDR=0.0.0.0:5000 -e REGISTRY_HTTP_TLS_CERTIFICATE={registry_Cert_Dir}/server.crt -e REGISTRY_HTTP_TLS_KEY={registry_Cert_Dir}/server.key -p 5000:5000 registry
+$ docker run -d --name=registry -v /home/user/docker/registry/certs:/certs -e REGISTRY_HTTP_ADDR=0.0.0.0:5000 -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/server.crt -e REGISTRY_HTTP_TLS_KEY=/certs/server.key -p 5000:5000 registry
 ```
 
 - `-d`: 컨테이너를 detached 모드로 실행
 - `--name={registry_Container_Name}`: 컨테이너의 이름을 설정
 - `-v {host_Cert_Dir}:{registry_Cert_Dir}`: 호스트 머신의 디렉토리를 컨테이너 내부의 디렉토리와 공유
-- `-e REGISTRY_HTTP_ADDR=0.0.0.0:5000`: 레지스트리 서버의 주소를 설정
+- `-e REGISTRY_HTTP_ADDR=0.0.0.0:5000`: 레지스트리 서버의 주소를 설정(호스트IP가 아닌 0.0.0.0으로 설정)
+  - 0.0.0.0:5000으로 설정하면 Docker 레지스트리가 컨테이너 내부에서 사용 가능한 모든 IP 주소와 5000 포트를 사용
+  - 호스트 IP와 관계없이 컨테이너 내부에서 Docker 레지스트리에 접근 가능
 - `-e REGISTRY_HTTP_TLS_CERTIFICATE={registry_Cert_Dir}/server.crt`: TLS 인증서 파일의 경로를 설정
 - `-e REGISTRY_HTTP_TLS_KEY={registry_Cert_Dir}/server.key` : TLS 인증서의 개인 키 파일의 경로를 설정
 - `-p 5000:5000`: 호스트 머신의 5000번 포트와 컨테이너 내부의 5000번 포트를 연결
