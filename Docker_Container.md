@@ -81,7 +81,7 @@ $ docker run -itd --init --privileged --name {container_name} -v {Host_Dir}:{Con
 - `-t` 옵션을 설정하지 않으면 명령을 입력할 수는 있지만, 셸이 표시되지 않습니다.
 
 ```shell
--d, --detach
+-d, --detac정정
 ```
 
 - Detached 모드
@@ -99,6 +99,11 @@ $ docker run -itd --init --privileged --name {container_name} -v {Host_Dir}:{Con
 
 - 데이터 볼륨을 설정
 - 호스트와 컨테이너의 디렉토리를 연결하여, 파일을 컨테이너에 저장하지 않고 호스트에 바로 저장(마운트)
+
+```shell
+-P
+```
+- 컨테이너가 이미지에 설정된 EXPOSE의 모든 포트를 호스트에 연결하도록 설정
 
 ```shell
 -p, --publish

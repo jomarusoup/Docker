@@ -194,9 +194,10 @@ $ docker run -d \
 > -v {host_Cert_Dir}:{registry_Cert_Dir} \
 > -e REGISTRY_HTTP_ADDR=0.0.0.0:5000 \
 > -e REGISTRY_HTTP_TLS_CERTIFICATE={registry_Cert_Dir}/server.crt \
+> -e REGISTRY_STORAGE_DELETE_ENABLED=true
 > -e REGISTRY_HTTP_TLS_KEY={registry_Cert_Dir}/server.key -p 5000:5000 registry
 
-$ docker run -d --name=registry -v /home/user/docker/registry/certs:/certs -e REGISTRY_HTTP_ADDR=0.0.0.0:5000 -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/server.crt -e REGISTRY_HTTP_TLS_KEY=/certs/server.key -p 5000:5000 registry
+$ docker run -d --name=registry -v /home/user/docker/registry/certs:/certs -e REGISTRY_HTTP_ADDR=0.0.0.0:5000 -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/server.crt -e REGISTRY_HTTP_TLS_KEY=/certs/server.key -e REGISTRY_STORAGE_DELETE_ENABLED=true -p 5000:5000 registry
 ```
 
 - `-d`: 컨테이너를 detached 모드로 실행
@@ -207,6 +208,7 @@ $ docker run -d --name=registry -v /home/user/docker/registry/certs:/certs -e RE
   - 호스트 IP와 관계없이 컨테이너 내부에서 Docker 레지스트리에 접근 가능
 - `-e REGISTRY_HTTP_TLS_CERTIFICATE={registry_Cert_Dir}/server.crt`: TLS 인증서 파일의 경로를 설정
 - `-e REGISTRY_HTTP_TLS_KEY={registry_Cert_Dir}/server.key` : TLS 인증서의 개인 키 파일의 경로를 설정
+- `-e REGISTRY_STORAGE_DELETE_ENABLED=true` : Docker Local Registry에서 이미지 삭제를 허용하는 옵션
 - `-p 5000:5000`: 호스트 머신의 5000번 포트와 컨테이너 내부의 5000번 포트를 연결
 
 ## 3. SSL 인증서 적용
@@ -224,13 +226,13 @@ $ scp {master_node_ID}@{master_node_IP}:{master_Dir} {worker_Dir}
 - SSL 인증서를 시스템의 인증서 보관 폴더로 이동합니다.
 
 ```shell
-$ cp ~/docker-registry/cert/server.crt /etc/pki/ca-trust/source/anchors/ 
+$ cp ~/registry/cert/server.crt /etc/pki/ca-trust/source/anchors/ 
 $ update-ca-trust
 ```
 
 ### 3.3. Worker Node의 도커 데몬을 restart
 ```shell
-$ sudo service docker restart
+$ systemctl restart docker
 ```
 
 ## 4. Image Pull/Push/Delete
