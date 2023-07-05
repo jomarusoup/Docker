@@ -30,18 +30,23 @@ $ docker service ps {Service_Name}
 # delete service
 $ docker service rm {Service_Name}
 
-# Private registry
-$ docker service create --with-registry-auth \
-> --name {Service_Name} \
-> --replicass {Number} \
-> {Image:Tag}
-
 # the number of replicas
 $ docker service scale {Service_Name}={Number}
 
 # service ps
 $ docker service ps {Service_Name}
 ```
+
+```shell
+# Private registry
+$ docker service create --with-registry-auth \
+> --name {Service_Name} \
+> --replicass {Number} \
+> {Image:Tag}
+```
+- Private registry에서 이미지를 받아오는 경우 `--with-registry-auth` 옵션 추가
+- Worker Node에서 별도로 로그인을 하지 않아도 이미지를 받기 가능
+- Manager Node의 Local Docker engin에 이미지가 없더라도 Private registry에서 이미지를 찾아서 Service create
 
 ## Service mode
 - Replicated mode : 복제 모드, 실제 서비스를 제공하기 위한 일반 모드
@@ -56,6 +61,54 @@ $ docker service create --mode global --name {Service_Name} {Image:Tag}
 
 # Service container list
 $ docker ps --filter is-task=true --format {{.Names}}
+```
+
+## Service Recovery from Failure
+- replicated mode로 설정된 service의 컨테이너 혹은 Node의 문제가 생기면 Manager는 새로운 Conatiner를 자동으로 생성
+```shell
+# Service Task list
+$ docker service ps {Service_Name}
+ID              NAME          IMAGE                                  NODE        DESIRED STATE   CURRENT STATE            ERROR     PORTS
+vdifjwicnf9tp   conatiner.1   {Registry_Host_IP}:5000/hello:latest   Manager     Running         Running 13 minutes ago             
+iw39tkdvkd2v3   container.2   {Registry_Host_IP}:5000/hello:latest   Worker_2    Running         Running 12 minutes ago             
+4103jfm2kldc0   container.3   {Registry_Host_IP}:5000/hello:latest   Worker_1    Running         Running 12 minutes ago             
+```
+
+```shell
+# Manager Node Container list
+$ docker ps
+CONTAINER ID   IMAGE                                  COMMAND                   CREATED          STATUS          PORTS                                       NAMES
+f2783a268e76   192.168.0.104:5000/hello_test:latest   "/bin/sh -c 'while t??   14 minutes ago   Up 14 minutes                                               container.1.vdifjwicnf9tp
+853aidh22094   registry                               "/entrypoint.sh /etc??   6 hours ago      Up 39 minutes   0.0.0.0:5000->5000/tcp, :::5000->5000/tcp   registry
+```
+
+```shell
+# Manager Node Task delete
+$ docker rm -f container.1.vdifjwicnf9tp
+container.1.vdifjwicnf9tp
+```
+
+```shell
+# Service Recovery
+$ docker service ps blissful_kirch
+ID             NAME              IMAGE                                  NODE        DESIRED STATE   CURRENT STATE            ERROR                         PORTS
+38xdze58e2ws   container.1       {Registry_Host_IP}:5000/hello:latest   Worker_3    Running         Running 3 seconds ago                                  
+vdifjwicnf9tp   \_ container.1   {Registry_Host_IP}:5000/hello:latest   Manager     Shutdown        Failed 8 seconds ago     "task: non-zero exit (137)"   
+iw39tkdvkd2v3  container.2       {Registry_Host_IP}:5000/hello:latest   Worker_2    Running         Running 13 minutes ago                                 
+4103jfm2kldc0  container.3       {Registry_Host_IP}:5000/hello:latest   Worker_1    Running         Running 13 minutes ago                                 
+```
+
+```shell
+# Random Node Down
+$ systmectl stop docker
+
+# docker node list
+$ docker node ls
+ID                  HOSTNAME      STATUS     AVAILABILITY    MANAGER           STATUS
+29ehkjo83bh3o8ab    Worker_1      Ready      Actice
+abvjk391fnkj391m    Worker_2      Down       Actice
+mdn093bgasdfhi29    Worker_3      Ready      Actice
+02ujhdfnj239ddf2    Manager       Ready      Actice          Leader
 ```
 
 ## Service Rolling Update
