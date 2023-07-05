@@ -4,6 +4,7 @@
 ## docker image create
 
 - 특정 어플리케이션을 위한 특정 개발 환경 구축 후 사용자만의 이미지 직접 생성
+- 기본 base image에 컨테이너 변경사항이 포함된 것을 이미지로 만들면 
 
 ```shell
 $ docker run -it --name {Container_Name} {Image:Tag}
