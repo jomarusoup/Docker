@@ -74,7 +74,7 @@ $ curl -X GET https://{localhost_IP}:5000/v2/_catalog
 ### 4.5. 이미지의 세부 목록(태그 목록) 확인
 
 ```shell
-$ curl -X GET https://{localhost_IP}:5000/v2/{Image}/tags/list
+$ curl -k -X GET https://192.168.0.104:5000/v2/_catalog
 {"name":"Image","Tag":["0.1","0.2"]}
 ```
 
