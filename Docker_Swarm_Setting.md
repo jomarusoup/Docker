@@ -17,6 +17,21 @@ Swarm-worker1
 Swarm-worker2
 Swarm-worker3
 ```
+
+- Port Open
+```shell
+# Swarm Manager Node use this port
+$ firewall-cmd --add-port=2377/tcp --permanent
+
+# All Node network
+$ firewall-cmd --add-port=7946/tcp --permanent
+$ firewall-cmd --add-port=7946/tcp --permanent
+
+# ingress overlay network use this port 
+$ firewall-cmd --add-port=4789/tcp --permanent
+$ firewall-cmd --add-port=4789/udp --permanent
+```
+
 - Manager Node에서 Swarm Cluster 시작
 - Worker Node가 Manager Node에 접근하기 위한 IP 입력
 ```shell
@@ -32,6 +47,13 @@ $ docker swarm init --advertise-addr {Manager_Node_IP}
 - Docker Node 확인
 ```shell
 $ docker node ls
+
+ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+nkrkjn231009391rfrs91ky29     Dev6-1     Ready     Active                          24.0.2
+kp8u7w1ibc7fmp4vy794lku8q     Dev6-2     Ready     Active                          24.0.2
+n6bgo8rrse19ngagrb4dc4ie8     Dev6-3     Ready     Active                          24.0.2
+vpzn9jv2no5szz8x56kchoq01 *   Dev6-4     Ready     Active         Leader           24.0.2
+
 ```
 - Manager node = Nomal Manager Node vs Leader Node
   - Leader Node : 모든 Manager Node에 해한 데이터 동기화화 관리 담당, 항상 작동 필요
@@ -58,6 +80,7 @@ $ docker swarm leave
 - leave는 해당 노드의 상태를 Down으로만 인지(노드 삭제 X)
 - Node를 삭제하고 싶으면 Manager Node에서 명령어 입력
 ```shell
+# in Manager Node
 $ docker node rm {Worker_Node_Name}
 
 # Manager Node delete in Manager Node
