@@ -33,56 +33,32 @@ $ docker run -d --name={Container_Name} -p 5000:5000 --restart=always registry
  - Registry Container는 5000번 포트를 사용
  - Container 5000번 포트와 Host의 5000번 포트를 연결
 
-## 4. 사설 레지스트리의 이미지 레포지토리 목록 조회
-
+## 4. 사설 레지스트리로 이미지 업로드 및 조회
 ```shell
-$ curl -X GET https://{localhost_IP}:5000/v2/_catalog
-
-{"repositories":[]}
-```
-- `-X GET` : The HTTP request method to GET
-- `https://{localhost_IP}:5000/v2/_catalog` : local registry의 _catalog API 엔드포인트에 GET 요청
-- 사용 가능한 이미지 목록 조회
-
-### 4.1. 사설 레지스트리로 이미지 업로드
-- 사설 레지스트리에 이미지 업로드를 위한 이미지 이름(태그) 지정
-
-```shell
+# 사설 레지스트리에 이미지 업로드를 위한 이미지 이름(태그) 지정
 $ docker image tag {Image:Tag} {localhost_IP}:5000/{Image:Tag}
-```
 
-### 4.2. 도커 엔진의 이미지 목록 확인
-
-```shell
+# 도커 엔진의 이미지 목록 확인
 $ docker images
-```
 
-### 4.3. 사설 레지스트리에 이미지 업로드
+#사설 레지스트리에 이미지 업로드
+$ docker image push {Host_registry_IP}:5000/{Image:Tag}
 
-```shell
-$ docker image push {localhost_IP}:5000/{Image:Tag}
-```
+# 사설 레지스트리의 이미지 레포지토리 목록 조회
+$ curl -k -X GET https://{Host_registry_IP}:5000/v2/_catalog
+{"repositories":[Image_Name]}
 
-### 4.4. 사설 레지스트리의 이미지 레포지토리 목록 조회
+# 이미지의 세부 목록(태그 목록) 확인
+$ curl -k -X GET https://{Host_registry_IP}:5000/v2/{Image_Name}/tags/list
+{"name":"Image_Name","Tag":["1.1","1.2"]}
 
-```shell
-$ curl -X GET https://{localhost_IP}:5000/v2/_catalog
-
-{"repositories":[Image]}
-```
-
-### 4.5. 이미지의 세부 목록(태그 목록) 확인
-
-```shell
-$ curl -k -X GET https://192.168.0.104:5000/v2/_catalog
-{"name":"Image","Tag":["0.1","0.2"]}
-```
-
-### 4.6. 사설 레지스트리로부터 이미지 다운로드
-
-```shell
+# 사설 레지스트리로부터 이미지 다운로드
 $ docker image pull {localhost_IP}:5000/{Image:Tag}
 ```
+
+- `curl`은 URL을 통해 HTTP 요청
+- `-k` 옵션은 SSL 인증서 검증을 비활성화
+- `-X GET` 옵션은 HTTP GET 요청
 
 ## 5. docker deamon
 
