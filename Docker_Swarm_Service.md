@@ -19,18 +19,34 @@
 ## Service Create
 - `-d`가 사용 가능한 이미지만 사용
 ```shell
-$ docker service create {Image:Tag}
+$ docker service create {Option} {Image:Tag}
 
+# Host Port - Service Port
+$ docker service create -p {Host_Port}:{Service_Port} {Image:Tag}
+```
+- `-p` : Swarm Cluster 자체에 포트를 개방
+- 각 생성된 Container가 Host_Port에 연결 X
+- 실제로 각 Node_Port로 들어온 요청을 클러스터 내에서 생성된 컨에이너 중 1개로 redirect
+  - 각 Node_Port를 Service_Port로 매핑하여 요청이 클러스터 내에서 생성된 컨테이너 중 하나로 redirection
+```shell
+# Service container list
+$ docker ps --filter is-task=true --format {{.Names}}
+```
+- Docker swarm모드에서 실행 중인 Service에서 생성된 Container만 확인 가능
+- 명령어를 입력한 Node에서 실행 중인 Service의 Container 이름 출력
+
+```shell
 # service list
 $ docker service ls
 
 # service info
+# 각 container가 실행 중인 Node 확인 가능
 $ docker service ps {Service_Name}
 
 # delete service
 $ docker service rm {Service_Name}
 
-# the number of replicas
+# Container 개수 증가
 $ docker service scale {Service_Name}={Number}
 
 # service ps
@@ -46,7 +62,7 @@ $ docker service create --with-registry-auth \
 ```
 - Private registry에서 이미지를 받아오는 경우 `--with-registry-auth` 옵션 추가
 - Worker Node에서 별도로 로그인을 하지 않아도 이미지를 받기 가능
-- Manager Node의 Local Docker engin에 이미지가 없더라도 Private registry에서 이미지를 찾아서 Service create
+- Manager Node의 Local Docker Daemon에 이미지가 없더라도 Private registry에서 이미지를 찾아서 Service create
 
 ## Service mode
 - Replicated mode : 복제 모드, 실제 서비스를 제공하기 위한 일반 모드
@@ -58,13 +74,11 @@ $ docker service create --with-registry-auth \
 ```shell
 # Global mode
 $ docker service create --mode global --name {Service_Name} {Image:Tag}
-
-# Service container list
-$ docker ps --filter is-task=true --format {{.Names}}
 ```
 
+
 ## Service Recovery from Failure
-- replicated mode로 설정된 service의 컨테이너 혹은 Node의 문제가 생기면 Manager는 새로운 Conatiner를 자동으로 생성
+- replicated mode로 설정된 Service의 Container 혹은 Node에 문제가 생기면 Manager는 새로운 Conatiner를 자동으로 생성
 ```shell
 # Service Task list
 $ docker service ps {Service_Name}
@@ -98,6 +112,8 @@ iw39tkdvkd2v3  container.2       {Registry_Host_IP}:5000/hello:latest   Worker_2
 4103jfm2kldc0  container.3       {Registry_Host_IP}:5000/hello:latest   Worker_1    Running         Running 13 minutes ago                                 
 ```
 
+- `docker service ps`에서 NAME에 `\_`가 붙어 있으면 어떤 이유이든지 Down Container
+
 ```shell
 # Random Node Down
 $ systmectl stop docker
@@ -110,5 +126,46 @@ abvjk391fnkj391m    Worker_2      Down       Actice
 mdn093bgasdfhi29    Worker_3      Ready      Actice
 02ujhdfnj239ddf2    Manager       Ready      Actice          Leader
 ```
-
+- 문제의 Node를 복구해도 다시 생성된 Container이 원래의 Node로 돌아가지 X
+  - Rebalance 작업 X  
+- 새로운 Node를 추가하거나 Node를 복구한 경우 `docker service scale`로 컨테이너의 개수 조정 필요(감소 후 증가)
+```shell
+$ docker service scale {Service_Name}=1
+$ docker service scale {Service_Name}=4
+```
 ## Service Rolling Update
+- 여러 개의 서버, 컨테이너로 구성된 클러스터를 변경하기 위해 하나씩 재시작
+- 모든 Node나 Containeer를 한 번에 재시작하면 Service Down time이 발생
+- 하나씩 재시작을 진행하는 경우 다른 Node나 Container은 작동 중이기에 지속적인 서비스 가능
+
+```shell
+# Sevice Image Update
+$ docker service update --image {Image:Tag} {Servicd_Name}
+
+
+```
+```shell
+$ docker service create \
+> --replicas 4 \
+> --name {Service_Name} \
+> --update-delay 10s \
+> --update-parallelism 2 \
+> {Image:Tag}
+
+$ docker service create --replicas 4 --name {Service_Name} --update-delay 10s --update-parallelism 2 {Image:Tag}
+```
+
+- `--replicas` : 생성할 컨테이너 개수를 지정
+- `--update-delay` : Rolling Update를 진행할 때, 각 Container 간의 업데이트 딜레이를 지정
+- `--update-parallelism` : Rolling Update를 진행할 때, 동시에 업데이트할 Container의 개수를 지정
+
+```shell
+$ docker service inspect --pretty {Service_Name}
+
+...
+UpdateConfig:
+  Parallelism: 2
+  Delay:       10s
+  On failure:  pause
+...
+```
