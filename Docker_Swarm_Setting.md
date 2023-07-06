@@ -48,18 +48,23 @@ $ docker swarm init --advertise-addr {Manager_Node_IP}
 ```shell
 $ docker node ls
 
-ID                            HOSTNAME   STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
-nkrkjn231009391rfrs91ky29     Dev6-1     Ready     Active                          24.0.2
-kp8u7w1ibc7fmp4vy794lku8q     Dev6-2     Ready     Active                          24.0.2
-n6bgo8rrse19ngagrb4dc4ie8     Dev6-3     Ready     Active                          24.0.2
-vpzn9jv2no5szz8x56kchoq01 *   Dev6-4     Ready     Active         Leader           24.0.2
+ID                            HOSTNAME     STATUS    AVAILABILITY   MANAGER STATUS   ENGINE VERSION
+nkrkjn231009391rfrs91ky29     Worker_1     Ready     Active                          24.0.2
+kpc3jdcvnq7fmp4vy794lku8q     Worker_2     Ready     Active                          24.0.2
+21318rrsad0123ngrb4dc4ie8     Werker_3     Ready     Active                          24.0.2
+vpzn9jv2no5szadfsdcvaadq01 *  Manager_4    Ready     Active         Leader           24.0.2
 
 ```
+- (*)가 붙은 Node 현재 위치한 Node
 - Manager node = Nomal Manager Node vs Leader Node
   - Leader Node : 모든 Manager Node에 해한 데이터 동기화화 관리 담당, 항상 작동 필요
   - 장애가 생기면 새로운 Leader Node 선출
 - 새로운 Manager Node를 생성할려면 Manager token 생성 및 입력
 ```shell
+# Worker Node add
+$ docker swarm join-tocken worker
+
+# Mananger Node add
 $ docker swarm join-token manager
 
 # 보안을 위해 주기적으로 토큰 갱신 필요
@@ -80,7 +85,7 @@ $ docker swarm leave
 - leave는 해당 노드의 상태를 Down으로만 인지(노드 삭제 X)
 - Node를 삭제하고 싶으면 Manager Node에서 명령어 입력
 ```shell
-# in Manager Node
+# Woker Node delete in Manager Node
 $ docker node rm {Worker_Node_Name}
 
 # Manager Node delete in Manager Node
@@ -92,10 +97,10 @@ $ docker swarm leave --force
 ## Worker 2 Manager / Manager 2 Worker
 ```shell
 # Worker 2 Manager
-$ docker node promote
+$ docker node promote {Woker_Node_Name}
 
 # Manager 2 Worker
-$ docker node demote
+$ docker node demote {Manager_Node_Name}
 ```
 - Manager Node가 1개만 존재하면 Manager 2 Worker 불가능
 - Manager Leader Node에서 Manager 2 Worker하면 다른 Manager Ndoe 중 New Leadr 선출
