@@ -344,7 +344,7 @@ $ docker exec my-centos-service cat /run/secrets/my-root-password
  ```shell
  -e USER_PASSWORD_FILE="/run/secrets/user_password" 
  ```
-- 컨테이너 내에서 어플리케이션이 특정 경로의 팡ㄹ 값을 참조할 수 있도록 설계 요구
+- 컨테이너 내에서 어플리케이션이 특정 경로의 파일 값을 참조할 수 있도록 설계 요구
 
   - `-e`을 통해서 특정 경로의 파일로부터 비밀번호를 가져올 수 있게 설정
 
