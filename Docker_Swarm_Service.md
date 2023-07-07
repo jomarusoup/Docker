@@ -14,7 +14,9 @@
 - Rolling Update : Service 내부의 Container의 이미지를 일괄적으로 업데이트 가능
   - 이미지를 순서대로 변경해 서비스가 전체가 정지되지 않고 컨테이너의 업데이트 진행 가능
 
-- Service를 제어하는 모든 docker command는 Manager Node에서만 사용 가능
+<aside class="notice">
+Service를 제어하는 모든 docker command는 Manager Node에서만 사용 가능
+</aside>
 
 ## Service Create
 - `-d`가 사용 가능한 이미지만 사용
@@ -228,5 +230,34 @@ $ docker secret inspect {Secret_Name}
 $ docker service create \
 > --name {Service_Name} \
 > --replicas {Number} \
-> --secret source={Password}, target=
+> --secret source={Password}, target={Service_Container_Root_Password} \
+> --secret source={Password}, target={Service_Container_User_Password} \
+> -e {Service_Container_Root_Password_File}="/run/secrets/{Service_Container_Root_Password}" \
+> -e {Service_Container_User_Password_File}="/run/secrets/{Service_Container_User_Password}" \
+> -e {Service_Container_Database}="{Database_Info}" \
+> {Image:Tag}
 ```
+- `--secret source={Password}, target={Service_Container_Root_Password}`
+  -  Service Container에서 사용할 Root 계정의 비밀번호를 지정
+  -  `{Password}` : 비밀번호를 저장한 Secret의 이름
+  -  `{Service_Container_Root_Password}` : 비밀번호를 사용할 Root 계정의 이름 지정
+
+- `--secret source={Password}, target={Service_Container_User_Password}` 
+  - Service Container에서 사용할 User 계정의 비밀번호를 지정
+  - `{Password}` : 비밀번호를 저장한 Secret의 이름
+  - `{Service_Container_User_Password}` : 비밀번호를 사용할 User 계정의 이름 지정
+
+- `-e {Service_Container_Root_Password_File}="/run/secrets/{Service_Container_Root_Password}"`
+  - Service Container에서 사용할 Root 계정의 비밀번호 파일 경로를 지정
+  - `{Service_Container_Root_Password_File}` : 파일 경로를 지정하는 환경 변수의 이름
+  - `{Service_Container_Root_Password}` : 비밀번호를 사용할 Root 계정의 이름 지정
+
+- `-e {Service_Container_User_Password_File}="/run/secrets/{Service_Container_User_Password}"` 
+  - Service Container에서 사용할 User 계정의 비밀번호 파일 경로를 지정 
+  - `{Service_Container_User_Password_File}` : 파일 경로를 지정하는 환경 변수의 이름
+  - `{Service_Container_User_Password}` : 비밀번호를 사용할 User 계정의 이름 지정
+
+- `-e {Service_Container_Database}="{Database_Info}"`
+  -  Service Container에서 사용할 데이터베이스 정보를 지정
+  -  `{Service_Container_Database}` : 데이터베이스 정보를 저장하는 환경 변수의 이름 
+  -  `{Database_Info}` : 데이터베이스 정보를 지정
