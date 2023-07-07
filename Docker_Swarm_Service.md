@@ -349,6 +349,18 @@ $ docker exec my-centos-service cat /run/secrets/my-root-password
   - `-e`을 통해서 특정 경로의 파일로부터 비밀번호를 가져올 수 있게 설정
 
 ## Config
+- Config는 Service Container에서 사용할 설정 정보를 전달할 때 사용하는 기능
+- 파일이나 환경 변수와 같은 설정 정보를 안전하게 저장하고 전달
+- Config를 사용하면, Service Container 간에 설정 정보를 공유
 ```shell
-$ docker config Create registry-config congig.yml
+# Config Create
+$ docker config Create {Config_Name} config.yml
+
+# Ex)
+$ docker config Create registry-config congif.yml
 ```
+- Docker Swarm에서 Config를 생성하는 명령어
+- `docker config create` 명령어를 사용하여 Config를 생성
+- Config 값은 config.yml 파일에서 읽어오도록 설정
+
+
