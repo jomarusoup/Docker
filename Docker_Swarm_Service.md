@@ -42,6 +42,8 @@ $ docker service ls
 # service info
 # 각 container가 실행 중인 Node 확인 가능
 $ docker service ps {Service_Name}
+# 출력되는 정보를 축소하지 않고 전체 정보를 출력하도록 지정하는 옵션
+$ docker service ps {Service_Name} --no-trunc
 
 # delete service
 $ docker service rm {Service_Name}
@@ -141,10 +143,9 @@ $ docker service scale {Service_Name}=4
 ```shell
 # Sevice Image Update
 $ docker service update --image {Image:Tag} {Servicd_Name}
-
-
 ```
 ```shell
+# Sevice Image Update
 $ docker service create \
 > --replicas 4 \
 > --name {Service_Name} \
@@ -160,6 +161,7 @@ $ docker service create --replicas 4 --name {Service_Name} --update-delay 10s --
 - `--update-parallelism` : Rolling Update를 진행할 때, 동시에 업데이트할 Container의 개수를 지정
 
 ```shell
+# Service Info
 $ docker service inspect --pretty {Service_Name}
 
 ...
@@ -168,4 +170,63 @@ UpdateConfig:
   Delay:       10s
   On failure:  pause
 ...
+```
+- `On failuce : pause` : 업데이트 중 오류가 발생하면 롤링 업데이트를 중지
+- `docker create service`에서 `--update-failure-action continue`옵션을 추가하면 오류가 발생해도 업데이트 진행
+```shell
+$ docker create service --name {Service_Name} --replicas {Number} --update-failure-action continue {Image:Tag}
+```
+- `docker create service`에 기본적으로 update에 대한 내용이 service 자체에 설정
+- `docker create service`의 옵션을 변경하는 것으로 update에 대한 설정 변경 가능
+- Rollback도 가능
+```shell
+$ docker service rollback {Service_Name}
+```
+
+## Passing configuration information to service containers
+- 외부에 어플리케이션 서비스를 위해 컨테이너 내부에 미리 설정값 포함
+- 정적으로 설정 값을 이미지 내부에 포함해 배포 시 확장성과 유연성 감소
+  - 대안으로 `-v`를 통해 호스트에 위치함 설정 파일이나 값을 볼륨으로 컨테이너에 공유 가능
+  - 컨테이너 내부의 설정값을 유동적으로 설정하기 위해 `-e`옵션을 통한 환경변수 설정 가능
+- 같은 클러스터 내에서 파일 공유를 위해 설정 파일을 호스트 마다 마련하는 것은 비효율적
+  - secret : Password, SSH key, 인증서 key 같은 민감한 데이터 전송
+  - config : 어플리케이션 컨테이너나 레지스트리 설정 파일과 같이 암호화가 필요없는 설정값에 대해 사용
+- `docker run`에서는 사용이 불가능하며 Docker Swarm 모드에서만 사용 가능
+
+### Secret
+- 파일의 내용을 터미널에 출력해 secret로 가져올 수 있지만 echo도 사용 가능
+```shell
+# Secret create
+$ echo {Password} | docker secret create {Secret_Name} -
+dfalen2o3ql2
+
+# Secret List
+$ docker secret ls
+
+# Secret Info
+$ docker secret inspect {Secret_Name}
+[
+    {
+        "ID": "dfalen2o3ql2",
+        "Version": {
+            "Index": 29550
+        },
+        "CreatedAt": "2023-xx-xxT00:06:05.625892093Z",
+        "UpdatedAt": "2023-xx-xxT00:06:05.625892093Z",
+        "Spec": {
+            "Name": "{Secret_Name}",
+            "Labels": {}
+        }
+    }
+]
+
+```
+- Secret를 조회해도 실제 값은 확인 불가능
+- secret값은 Manager Node간에 암호화된 상태로 저장
+- File system에 저장되지 않고 Memory에 저장되기에 Service Container이 삭제되면 Secret도 같이 삭제(휘발성)
+```shell
+$ docker service create \
+> --name {Service_Name} \
+> --replicas {Number} \
+> --secret source={Password}, target=
 ```

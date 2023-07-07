@@ -1,10 +1,11 @@
 # 1. Docker basic command
-| Command                                         | Explain                                             |
-| :---------------------------------------------- | :-------------------------------------------------- |
+| Command                                       | Explain                                             |
+| :-------------------------------------------- | :-------------------------------------------------- |
 | `docker search {Image_Name}`                  | 이미지 이름으로 docker hub에서 검색                 |
 | `docker pull {Image_Name:TAG}`                | 저장소에서 이미지 다운로드                          |
 | `docker ps`                                   | 실행중인 컨테이너 조회                              |
-| `docker ps -a`                                | 생성된 컨테이너 전체 조회                           |
+| `docker ps`                                   | 실행중인 컨테이너 조회                              |
+| `docker ps -a --no-trunc`                     | 출력되는 정보를 축소하지 않고 전체 정보를 출력      |
 | `docker images`                               | 저장한 이미지 목록 조회                             |
 | `docker create {Option} {Image_Name:Tag}`     | 컨테이너 생성                                       |
 | `docker run {Option} {Image_Name:Tag}`        | 컨테이너 생성 및 실행                               |
