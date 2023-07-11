@@ -228,10 +228,10 @@ $ docker push {Image}
 - registry 서버 주소를 입력하실때 https를 사용
 
 ```shell
-$ curl -X GET https://{Registry_Server_IP}:{Registry_Server_Port}/v2/_catalog
+$ curl -k -X GET https://{Registry_Server_IP}:{Registry_Server_Port}/v2/_catalog
 ```
 
 - Docker registry에 있는 이미지 삭제
 ```shell
-$ $ curl -X DELETE https://{Registry_Server_IP}:{Registry_Server_Port}/v2/{Image_name}/manifests/{Image_tag}
+$ curl -k -X DELETE https://{Registry_Server_IP}:{Registry_Server_Port}/v2/{Image_name}/manifests/{Image_tag}
 ```
