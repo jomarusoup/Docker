@@ -26,6 +26,56 @@
 - 도커 허브(중앙 이미지 저장소)에서 이미지를 pull
   - 도커가 공식적으로 제공하는 이미지 저장소
 
+## `dockerfile` 작성
+
+```dockerfile
+# BASE IMAGE : FROM
+FROM scratch
+
+# IMAGE INFO : LABEL, MAINTAINER
+LABEL "파일명" = "Filename"
+LABEL "설명"   = "explain"
+LABEL "작성자" = "Name"
+
+# IMAGE BUILD : WORKDIR, ENV, COPY, ADD, RUN, EXPOSE, VOLUME, ARG, USER, ...
+#--- [작업경로]
+WORKDIR 
+
+#--- [환경설정]
+ENV 
+
+#--- [HOST to CONTAINER]
+COPY 
+
+# CONTAINER RUN : ENTRYPOINT, CMD
+ENTRYPOINT ["/bin/bash", "-c", "tail -f /dev/null"]
+
+# 선택
+# 컨테이너가 생성된 후 실행될 명령어 (단 ENTRYPOINT와 다르게 docker run에서 명령어를 변견할 수 있다.)
+CMD ["-c", "tail -f /dev/null"]
+
+```
+
+### docker run 후 바로 exit되는 경우 Dockerfile에 추가
+
+```shell
+tail -f /dev/null
+```
+
+- null device(/dev/null) 라고 불리는 리눅스 장치 파일을 계속 읽음으로써 컨테이너 작업을 유지시키는 방식
+
+## 이미지 빌드
+
+이미지 빌드시 /home/user에서 명령어 실행
+
+```shell
+$ docker build -t {Images_Name:Tag} -f {Dockerfile_Dir} .
+```
+
+- `-t`: 이미지의 이름:TAG 설정, TAG를 주지 않으면 latest로 생성
+- `-f`: Dockerfile의 절대경로
+
+
 # 3. Docker Container
 
 - 컨테이너에서 무엇을 하든 원래 이미지는 영향을 받지 않는다
