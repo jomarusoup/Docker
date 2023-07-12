@@ -5,25 +5,27 @@
 ## docker install
 
 ```shell
-$ yum install -y yum-utils
+$ dnf install -y dnf-utils
 
 # add repo
-$ yum-config-manager \
-> --add-repo \
-> https://download.docker.com/linux/centos/docker-ce.repo
+$ dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 
-$ yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+# system repo update
+$ dnf update -y
+
+# New repo list
+$ dnf repolist -v
 
 # install docker
 # try to add 
 # '--allowerasing' to command line to replace conflicting packages 
 # '--skip-broken' to skip uninstallable packages 
 # '--nobest' to use not only best candidate packages
-$ yum install docker-ce docker-ce-cli containerd.io
+$ dnf install docker-ce docker-ce-cli containerd.io
 
 # docker start & reboot auto start
 $ systemctl start docker
-$ systmectl enable docker
+$ systemctl enable docker
 
 # docker version check
 $ docker version
