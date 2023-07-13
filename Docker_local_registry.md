@@ -90,22 +90,30 @@ $ echo subjectAltName = IP:211.240.28.248 > extfile.cnf
 # CSR을 사용하여 CA 인증서를 사용하여 서버 인증서를 생성하고 ./certs/domain.crt에 저장
 $ openssl x509 -req -in ./certs/domain.csr -CA ./certs/ca.crt -CAkey ./certs/ca.key -CAcreateserial -out ./certs/domain.crt -days 1000 -extfile extfile.cnf
 ```
- 
+
+3. Docker 로컬 레지스트리에 대한 인증을 설정하는 데 사용 
 ```shell
-$ htpasswd -c htpasswd {UserID}
+# 사용자를 위한 htpasswd 파일을 생성
+$ htpasswd -c htpasswd {USER_ID}
+
+# htpasswd 파일을 certs 디렉토리로 이동
 $ mv htpasswd certs/
 ```
 
+4. Docker 로컬 레지스트리를 HTTPS로 지원하기 위해 Nginx 서버를 구성
 ```shell
 $ vi certs/nginx.conf
+
+# Nginx 서버가 Docker 레지스트리로의 요청을 수신하고, 인증을 확인하고, 요청을 Docker 레지스트리로 전달하는 방법을 정의
+# certs 디렉토리에 저장된 SSL/TLS 인증서 및 htpasswd 파일을 사용
+# SSL/TLS 인증서는 HTTPS 연결을 보호하고, htpasswd 파일은 Docker 레지스트리에 대한 인증을 처리
 
 upstream docker-registry {
     server registry:5000;
 }
- 
 server {
     listen 443;
-    server_name 211.240.28.248;
+    server_name {HOST_IP};
     ssl on;
     ssl_certificate /etc/nginx/conf.d/domain.crt;
     ssl_certificate_key /etc/nginx/conf.d/domain.key;
@@ -131,30 +139,46 @@ server {
 }
 ```
 
+4. Pravate Registry Crate
 ```shell
-$ docker run -d --name myregistry --restart=always registry
+$ docker run -d --name registry --restart=always registry
 ```
 
+5. Docker 로컬 레지스트리를 HTTPS로 지원하기 위해 Nginx 서버를 실행
 ```shell
-$ docker run -d --name nginx_frontend \
+$ docker run -d --name nginx_registry \
     -p 443:443 \
-    --link myregistry:registry \
-    -v $(pwd)/certs/:/etc/nginx/conf.d \
-    nginx:1.9
+    --link registry:registry \
+    -v home/user/certs/:/etc/nginx/conf.d \
+    nginx
+```
+-  nginx_registry라는 이름의 Docker 컨테이너를 생성하고, 이 컨테이너는 registry 컨테이너와 연결
+- 호스트의 443 포트와 컨테이너의 443 포트를 매핑하여 HTTPS 연결을 허용
+- certs 디렉토리를 Nginx 서버의 설정 파일 디렉토리로 마운트
+
+```shell 
+#  ca.crt 파일을 /etc/pki/ca-trust/source/anchors/ 디렉토리로 복사
+$ cp ca.crt /etc/pki/ca-trust/source/anchors/
+
+# 시스템의 CA 저장소를 업데이트
+$ update-ca-trust extract
+
+# ca.crt 파일이 올바른지 확인
+$ openssl verify ca.crt
+ca.crt: OK
+ 
+# Docker restart
+$ service docker restart
+$ docker start nginx_registry
 ```
 
+7. docker login in Pravate Registry
 ```shell
-$ docker login https://211.240.28.248
- 
-$ cp ca.crt /etc/pki/ca-trust/source/anchors/
-$ update-ca-trust extract
-$ openssl verify ca.crt
- 
-$ service docker restart
-$ docker start nginx_frontend
- 
-$ docker login https://211.240.28.248
+$ docker login https://{HOST_IP}
+Username: {USER_ID}
+Password: 
 ```
+
 
 ### 5.2. Pravate Registry Server에 접근할 서버에 인증서 등록
 - 접근할 모든 서버에 인증서 등록
