@@ -17,6 +17,12 @@ $ docker image pull registry
 ```
 
 ## 3. registry 컨테이너 생성 및 실행 
+- Registry Container는 5000번 포트를 사용
+```shell
+$ firewall-cmd --permanent --zone=public --add-port=5000/tcp
+$ firewall-cmd --reload
+$ firewall-cmd --list-all
+```
 - registry 이미지는 docker hub에서 공식적으로 지원하는 이미지
 - 다른 여타 이미지와 다르게 `-it`로 접근 불가능
     - registry 이미지가 백구라운드에서 실행되는 서버의 역할이기 때분
@@ -30,7 +36,6 @@ $ docker run -d --name={Container_Name} \
 
 $ docker run -d --name={Container_Name} -p 5000:5000 --restart=always registry
 ```
- - Registry Container는 5000번 포트를 사용
  - Container 5000번 포트와 Host의 5000번 포트를 연결
 
 ## 4. 사설 레지스트리로 이미지 업로드 및 조회
@@ -63,6 +68,13 @@ $ docker image pull {localhost_IP}:5000/{Image:Tag}
 
 ## 5. SSL 인증서 생성 및 적용(Locky & RHEL)
 ### 5.1. Pravate Registry Container를 위한 인증서 생성
+- Nginx 서버는 443 포트를 사용하여 HTTPS 연결을 허용
+- 443 포트는 Docker 로컬 레지스트리에 대한 인증을 처리하는 데 사용
+```shell
+$ firewall-cmd --permanent --zone=public --add-port=443/tcp
+$ firewall-cmd --reload
+$ firewall-cmd --list-all
+```
 
 1. 로컬 레지스트리를 HTTPS로 지원하기 위해 자체 서명 SSL/TLS 인증 기관(CA) 및 CA 인증서를 생성
 ```shell
@@ -204,4 +216,10 @@ ca.crt: OK
 $ service docker restart
 ```
 
+4. docker login in Pravate Registry
+```shell
+$ docker login https://{HOST_IP:443}
+Username: {USER_ID}
+Password: 
+```
 

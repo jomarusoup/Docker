@@ -38,7 +38,33 @@ services:
     ipc: host
     network_mode: host
 ```
+- YAML파일에서 들여쓰기는 Tab가 아닌 공백 2개(Space bar 2)로 구분
+- `-f` 옵션으로 yml파일 지정
+  - 옵션을 주지 않으면 docker-compose.yml파일을 읽어 컨테이너 생성
+```shell
+# Container Create
+$ docekr-compose up -d
+$ docker-compose -f {File_Name.yml} up -d
 
+# add Project Name
+$ docker-compose -p {Project_Name} -f {File_Name.yml} up -d
+```
+- 프로젝트 이름을 명시하지 않으면 현재 디렉터리의 이름으로 시작하는 이름으로 컨테이너 생성
+```shell
+$ docker service create --name {Service_Name} \
+> --replicas=5 \
+> --publish=8080:80 \
+> {Image:Tag}
+```
+
+
+```shell
+
+
+$ docker service ls
+$ docker service ps {Service_Name}
+
+```
 
 
 # Docker Stack ( Compose & Swarm )
