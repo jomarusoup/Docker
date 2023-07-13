@@ -63,21 +63,36 @@ $ docker image pull {localhost_IP}:5000/{Image:Tag}
 
 ## 5. SSL 인증서 생성 및 적용(Locky & RHEL)
 ### 5.1. Pravate Registry Container를 위한 인증서 생성
+
+1. 로컬 레지스트리를 HTTPS로 지원하기 위해 자체 서명 SSL/TLS 인증 기관(CA) 및 CA 인증서를 생성
 ```shell
+# 현재 작업 디렉토리에 certs 디렉토리를 생성
 $ mkdir certs
+
+# CA의 개인 키를 생성하고 ./certs/ca.key에 저장
 $ openssl genrsa -out ./certs/ca.key 2048
+
+# 개인 키를 사용하여 자체 서명 CA 인증서를 생성하고 ./certs/ca.crt에 저장
 $ openssl req -x509 -new -key ./certs/ca.key -days 10000 -out ./certs/ca.crt
 ```
- 
+
+2.  Docker 로컬 레지스트리를 HTTPS로 지원하기 위해 서버 인증서를 생성
 ```shell
+#  ./certs 디렉토리에 2048비트 RSA 개인 키를 생성하고 ./certs/domain.key에 저장
 $ openssl genrsa -out ./certs/domain.key 2048
+
+# 개인 키를 사용하여 서버 인증서 요청(CSR)을 생성하고 ./certs/domain.csr에 저장
 $ openssl req -new -key ./certs/domain.key -subj /CN=211.240.28.248 -out ./certs/domain.csr
+
+# ./certs/extfile.cnf 파일에 IP 주소를 추가
 $ echo subjectAltName = IP:211.240.28.248 > extfile.cnf
+
+# CSR을 사용하여 CA 인증서를 사용하여 서버 인증서를 생성하고 ./certs/domain.crt에 저장
 $ openssl x509 -req -in ./certs/domain.csr -CA ./certs/ca.crt -CAkey ./certs/ca.key -CAcreateserial -out ./certs/domain.crt -days 1000 -extfile extfile.cnf
 ```
  
 ```shell
-$ htpasswd -c htpasswd inance
+$ htpasswd -c htpasswd {UserID}
 $ mv htpasswd certs/
 ```
 
