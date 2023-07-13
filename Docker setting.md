@@ -17,7 +17,7 @@ $ dnf update -y
 $ dnf repolist -v
 
 # install docker
-# try to add 
+# try to add if you
 # '--allowerasing' to command line to replace conflicting packages 
 # '--skip-broken' to skip uninstallable packages 
 # '--nobest' to use not only best candidate packages
@@ -33,6 +33,20 @@ $ docker version
 
 ## docker deamon
 
+- 도커 위치 : /usr/bin/docker
+  - 컨테이너 이미지를 다루는 명령어를 실행하는 도커 
+  - 도커 명령어가 실제 도커 엔진이 아닌 클라이언트로서의 도구
+- 실제 도커 엔진 프로세스 실행 파일 위치 : /usr/bin/dockerd
+  - 도커 엔진 프로세스
+
+### Client Docker vs Server Docker
+- Client Docker : API를 사용 가능하도록 CLI를 제공
+  - Docker deamon은 API를 받아 Docker Engin의 기능 수행
+- Server Docker
+  - 컨테이너를 생성 및 실행 / 이미지 관리 
+  - dockerd processfh ehdwkr
+  - Docker engin은 외부에서 API입력을 받아 도커 엔지의 기능 수행
+  - Docker process가 실행되어 서버로서 입력을 받을 준비가 된 상태가 docker deamon
 ```shell
 $ vi /etc/docker/daemon.json
 
