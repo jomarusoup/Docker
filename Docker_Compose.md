@@ -38,6 +38,11 @@ services:
     ipc: host
     network_mode: host
 ```
+- version: '3.0'은 Docker Compose 파일의 버전을 지정
+  - Docker Compose가 사용할 문법과 기능을 결정
+  - 3.0 버전은 Docker Compose 파일에서 사용할 수 있는 최신 버전
+  - Docker Compose v1.17.0 이상에서 지원
+  - 3.0version에서는 services, networks, volumes 등의 키워드를 사용하여 서비스, 네트워크, 볼륨 등을 정의가능
 - YAML파일에서 들여쓰기는 Tab가 아닌 공백 2개(Space bar 2)로 구분
 - `-f` 옵션으로 yml파일 지정
   - 옵션을 주지 않으면 docker-compose.yml파일을 읽어 컨테이너 생성
@@ -48,6 +53,11 @@ $ docker-compose -f {File_Name.yml} up -d
 
 # add Project Name
 $ docker-compose -p {Project_Name} -f {File_Name.yml} up -d
+# scale option
+$ $ docker-compose -p {Project_Name} -f {File_Name.yml} up -d --scale {Container_Name}=5
+
+# delete docker-compose
+$ docker-compose -f {YAML_FILE} down -v
 ```
 - 프로젝트 이름을 명시하지 않으면 현재 디렉터리의 이름으로 시작하는 이름으로 컨테이너 생성
 ```shell
@@ -67,21 +77,118 @@ $ docker service ps {Service_Name}
 ```
 
 
-# Docker Stack ( Compose & Swarm )
+# Docker Stack ( Compose + Swarm )
+- Compose와 Stack 는 YAML파일로 컨테이너 생성
+- YAML작성 구조는 동일하나 각각 사용 가능한 옵션들이 상이
 - Docker Compose 파일을 사용하여 여러 개의 서비스를 정의 가능
+  - 여러 개의 이미지를 하나의 집합으로 생성하고 관리
 - Docker Swarm 클러스터에서 배포하고 관리
-- Docker Stack은 Docker Compose 파일을 사용하여 여러 개의 서비스를 정의하고, Docker Swarm 클러스터에서 배포하고 관리
-  -  Docker Swarm을 기반으로 하며, Docker Compose 파일을 사용하여 서비스를 정의하고 배포
--  Docker CLI를 사용하여 스택을 배포하고 관리
+  - 각 이미지마다 서비스 단위로 컨테이너 생성
+  - Docker Compose 파일을 사용하여 여러 개의 서비스를 정의
+  - Docker Swarm 클러스터에서 배포하고 관리
+  - Docker Swarm을 기반으로 하며, Docker Compose 파일을 사용하여 서비스를 정의하고 배포
 
-## Docker Compose 2 Stack
+## Docker Stack
 ```shell
 # Docker Compose 파일을 Docker Swarm 파일로 변환
 $ docker-compose -f docker-compose.yml config > docker-stack.yml
 
 # Docker Swarm으로 스택을 배포
-$ docker stack deploy -c docker-stack.yml <stack-name>
+$ docker stack deploy -c {YAML_FILE} {Stack_Name}
+# Pravate Registry Image를 사용하는 경우
+$ docker stack deploy -c {WAML_FILE} {Stack_Name} --with-registry-auth
 
 # 레플리카 수를 늘립니다.
 $ docker service scale <service-name>=<replica-count>
+
+# docker stack delete
+$ docker stack rm {Stack_Name}
+```
+
+```shell
+#------------------------------------------------------------------------------- 
+# Docker Compose file version
+#   3.8 - max_replicas_per_nodea, init (O)
+#   3.0 - max_replicas_per_nodea, init (X)
+#-------------------------------------------------------------------------------
+version: '3.8'
+#version: '3.0'
+
+#------------------------------------------------------------------------------- 
+# Serivce [Container]          : acs[4], ivs[2], mfs[1]
+# Ignoring unsupported options : ipc, network_mode, privileged, security_opt 
+#-------------------------------------------------------------------------------
+services:
+
+# [ Container Name : A ] -------------------------------------------------------------#
+  {A}:
+    #--- [ Image ]
+    image: {Pravate_Registry_IP:Port}/{Image:Tag}
+
+    #--- [ Docker Network ]
+    networks:
+      - default
+
+    #--- [ Deploy ]
+    deploy:
+      replicas: 4
+      restart_policy:
+        condition: on-failure
+      placement:
+        max_replicas_per_node: 1
+        constraints:
+         - node.role == manager
+#        - node.hostname == Wroker_1
+#        - node.hostname == Worker_2
+#        - node.hostname == Worker_3
+#        - node.hostname == Manager
+      resources:
+        limits:
+          memory: 3g
+        reservations:
+          memory: 2g
+
+    #--- [ Mount : Host 2 Container ]
+    volumes:
+      - /Dir:/Dir
+
+    init: true
+    tty: true
+    stdin_open: true
+
+# [ Container Name : B ] -------------------------------------------------------------#
+  {B}:
+    #--- [ Image ]
+    image: {Pravate_Registry_IP:Port}/{Image:Tag}
+
+    #--- [ Docker Network ]
+    networks:
+      - default
+
+    #--- [ Deploy ]
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      placement:
+        max_replicas_per_node: 1
+        constraints:
+         - node.role == worker
+#        - node.hostname == Wroker_1
+#        - node.hostname == Worker_2
+#        - node.hostname == Worker_3   
+      resources:
+        limits:
+          memory: 4g
+        reservations:
+          memory: 2g
+
+    #--- [ Mount : Host 2 Container ]
+    volumes:
+      - /Dir:/Dir
+
+    init: true
+    tty: true
+    stdin_open: true
+
 ```
