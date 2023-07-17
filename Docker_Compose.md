@@ -1,6 +1,7 @@
 # Docker Compose
 - 단일 노드에서 여러 개의 컨테이너로 구성된 어플리케이션을 하나의 컨테이너 묶음으로 관리
 - 옵션과 환경을 정의한 파일(YAML)을 읽어 컨테이너를 순차적으로 생성
+  - `.yaml` `.yml` 확장자 둘다 사용 가능
 - `run`의 옵션을 그대로 사용 가능
     - 각 컨테이너의 의존성, 네트워크, 볼륨등을 함께 정의 가능
 - Swarm의 서비스와 유사하게 디스커버리도 자동으로 수행
@@ -192,3 +193,56 @@ services:
     stdin_open: true
 
 ```
+
+## docker stack CLI
+### docker stack ls
+```shell
+$ docker stack ls
+NAME      SERVICES
+all       3
+
+$ docker stack ls --format "{{.Name}}: {{.Services}}"
+all: 3
+
+$ docker stack ls --format json
+{"Name":"all","Services":"3"}
+```
+
+### docker stack ps
+```shell
+$ docker stack ps {OPTION} {STACK_NAME}
+$ docekr stack ps {STACK_NAME}
+ID             NAME            IMAGE                         NODE      DESIRED STATE   CURRENT STATE             ERROR     PORTS
+rbmvasdfqwe6   all_A.1       211.240.28.248:443/acs:latest   Node-4    Running         Running 42 minutes ago              
+yxoiqwerfixe   all_A.2       211.240.28.248:443/acs:latest   Node-2    Running         Running 42 minutes ago              
+16ox2asdfg36   all_A.3       211.240.28.248:443/acs:latest   Node-3    Running         Running 42 minutes ago              
+gwbuqwerqid2   all_A.4       211.240.28.248:443/acs:latest   Node-1    Running         Running 42 minutes ago              
+cy8tasfu15sa   all_B.1       211.240.28.248:443/ivs:latest   Node-2    Running         Running 7 hours ago                 
+4bx6zwqwer3b   all_B.2       211.240.28.248:443/ivs:latest   Node-1    Running         Running 7 hours ago                 
+
+$ docker stack ps -f "node=node-1" {STACK_NAME}
+ID             NAME          IMAGE                           NODE      DESIRED STATE   CURRENT STATE             ERROR     PORTS
+gwbuqwerqid2   all_A.4       211.240.28.248:443/acs:latest   Node-1    Running         Running 42 minutes ago              
+4bx6zwqwer3b   all_B.2       211.240.28.248:443/ivs:latest   Node-1    Running         Running 7 hours ago                 
+
+# shows IDs for task name, without mapping IDs to Names.
+$ docker stack ps --no-resolve {STACK_ALL}
+
+# 생략하지 않고 모든 내용 출력
+$ docker stack ps --no-trunc {STACK_ALL}
+
+```
+
+### docker stack rm
+```shell
+$ docker stack rm {STACK_NAME ...}
+```
+
+### docker stack service
+```shell
+$ docker stack service {OPTION} {STACK_NAME}
+$ docker stack services --format "{{.ID}}: {{.Mode}} {{.Replicas}}"
+$ docker stack services ls --format json
+```
+
+## Docker Swarm ignored Configuration
