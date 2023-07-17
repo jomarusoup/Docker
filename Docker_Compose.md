@@ -115,7 +115,7 @@ version: '3.8'
 #version: '3.0'
 
 #------------------------------------------------------------------------------- 
-# Serivce [Container]          : acs[4], ivs[2], mfs[1]
+# Serivce [Container]          : {Contaienr_A}[4], {Container_B}[2]
 # Ignoring unsupported options : ipc, network_mode, privileged, security_opt 
 #-------------------------------------------------------------------------------
 services:
