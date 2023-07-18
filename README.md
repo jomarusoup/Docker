@@ -1,3 +1,31 @@
+# Docker Doc Link
+
+### iperf2 사용법 (멀티캐스팅 테스트)
+https://atl.kr/dokuwiki/doku.php/multicasting_test
+### Linux sysctl - rp_filter
+https://void.tistory.com/entry/rpfilter
+### 쿠버네티스 문서
+https://kubernetes.io/ko/docs/home/
+### 도커 공식 문서
+https://docs.docker.com/
+### 도커 사설 저장소 설명
+https://dongle94.github.io/docker/docker-registry-image-remove/ 
+- 이미지 삭제(curl 명령어에 --user ID:PW 추가)
+### 도커 스웜 설명
+https://seongjin.me/docker-swarm-services/
+### 도커 스웜 네트워크 설명
+https://watch-n-learn.tistory.com/49
+
+https://medium.com/dtevangelist/docker-%EA%B8%B0%EB%B3%B8-8-8-docker%EC%9D%98-network-c75f3077335d
+
+https://mns010.tistory.com/20 -> 브릿지
+
+https://blog.naver.com/freepsw/220868775278 -> 호스트 단위로도 로드 밸런싱 확인
+
+https://joont92.github.io/docker/network-%EA%B5%AC%EC%A1%B0/
+### 도커 컴포즈 설명
+https://yeko90.tistory.com/entry/how-to-use-docker-compose
+
 # Docker
 
 Docker는 컨테이너 기반 가상화를 지원하는 플랫폼이며 Go 프로그래밍 언어로 작성되었으며 Linux 커널의 기능을 활용하여 기능을 제공합니다.  컨테이너 기술을 사용하여 소프트웨어 개발 및 배포를 단순화하는 도구로 컨테이너는 코드와 해당 코드를 실행하는 데 필요한 종속성 및 도구가 포함된 소프트웨어 패키지입니다. Docker를 사용하면 동일한 코드와 도구를 포함하는 컨테이너를 만들 수 있으며, 이는 Docker가 활성화된 모든 환경에서 동일한 결과를 생성하는 장점이 있습니다.
