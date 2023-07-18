@@ -49,16 +49,20 @@ $ docker images
 #사설 레지스트리에 이미지 업로드
 $ docker image push {Host_registry_IP}:5000/{Image:Tag}
 
-# 사설 레지스트리의 이미지 레포지토리 목록 조회
-$ curl -k -X GET https://{Host_registry_IP}:5000/v2/_catalog
+# 인증을 비활성화 하고 사설 레지스트리의 이미지 레포지토리 목록 조회
+$ curl -k -X GET https://{Host_registry_IP:Port}/v2/_catalog
 {"repositories":[Image_Name]}
-
-# 이미지의 세부 목록(태그 목록) 확인
-$ curl -k -X GET https://{Host_registry_IP}:5000/v2/{Image_Name}/tags/list
+# 인증을 비활성화 이미지의 세부 목록(태그 목록) 확인
+$ curl -k -X GET https://{Host_registry_IP:Port}/v2/{Image_Name}/tags/list
 {"name":"Image_Name","Tag":["1.1","1.2"]}
 
+# --user login Image list
+$ curl --user {ID:PW} -X GET https://{Host_registry_IP:Port}/v2/_catalog
+# --user login Image tag list
+$ curl --user {ID:PW} -X GET https://{Host_registry_IP:Port}/v2/{Image_Name}/tags/list
+
 # 사설 레지스트리로부터 이미지 다운로드
-$ docker image pull {localhost_IP}:5000/{Image:Tag}
+$ docker image pull {localhost_IP:Port}/{Image:Tag}
 ```
 
 - `curl`은 URL을 통해 HTTP 요청
