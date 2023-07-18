@@ -25,9 +25,9 @@ $ firewall-cmd --add-port=2377/tcp --permanent
 
 # All Node network
 $ firewall-cmd --add-port=7946/tcp --permanent
-$ firewall-cmd --add-port=7946/tcp --permanent
+$ firewall-cmd --add-port=7946/udp --permanent
 
-# ingress overlay network use this port 
+# ingress overlay network use this port
 $ firewall-cmd --add-port=4789/tcp --permanent
 $ firewall-cmd --add-port=4789/udp --permanent
 ```
