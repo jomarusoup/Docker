@@ -80,4 +80,11 @@ $ docker build -t hello:1.0 -f /home/user/docker/dockerfile .
 
 ## Cache with Docker Image
 - 이미지를 빌드 이후 같은 빌드를 하면 이전의 이미지 빌드에 사용된 캐시 이용
-- 
+
+## Docker image Build Fail
+- 이미지 빌드 처리를 위해 저장하는 위치의 용량 초과
+```shell
+$ docker system prune -af
+- 만약 /var/lib/docker/overlay2/ 디렉토리 강제 삭제 후 계속 빌드 에러이면
+```shell
+$ docker builder prun
