@@ -84,8 +84,10 @@ $ docker build -t hello:1.0 -f /home/user/docker/dockerfile .
 ## Docker image Build Fail
 - 이미지 빌드 처리를 위해 저장하는 위치의 용량 초과
 ```shell
-$ docker system prune -af .
+$ docker system prune -af
+```
 
 - 만약 /var/lib/docker/overlay2/ 디렉토리 강제 삭제 후 계속 빌드 에러이면
 ```shell
-$ docker builder prun .
+$ docker builder prun
+```
