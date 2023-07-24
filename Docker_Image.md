@@ -89,5 +89,6 @@ $ docker system prune -af
 
 - 만약 /var/lib/docker/overlay2/ 디렉토리 강제 삭제 후 계속 빌드 에러이면
 ```shell
+# Remove build cache
 $ docker builder prune
 ```
