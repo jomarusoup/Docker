@@ -31,13 +31,15 @@ $ systemctl enable docker
 $ docker version
 ```
 - yum install 
+```shell
+$ yum install -y yum-utils
+
+# add repo
+$ yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+$ vi /etc/yum.repos.d/docker-ce.repo
 ```
-# yum install -y yum-utils
-# yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-# vi /etc/yum.repos.d/docker-ce.repo
-```
-docker-ce.repo 파일에 아래 내용 추가 후 저장 
-```YAML
+```shell
+# docker-ce.repo 파일에 아래 내용 추가 후 저장 
 [centos-extras]
 name=Centos extras - $basearch
 baseurl=http://mirror.centos.org/centos/7/extras/x86_64
@@ -45,8 +47,16 @@ enabled=1
 gpgcheck=1
 gpgkey=http://centos.org/keys/RPM-GPG-KEY-CentOS-7
 ```
-```
-# yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```shell
+# install docker
+$ yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# docker start & reboot auto start
+$ systemctl start docker
+$ systemctl enable docker
+
+# docker version check
+$ docker version
 ```
 
 ## docker deamon
