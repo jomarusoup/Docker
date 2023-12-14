@@ -3,7 +3,7 @@
 쿠버네티스 클러스트를 구성할 모든 노드에 도커 설치 및 설정 필요
 
 ## docker install
-
+- yum dnf 
 ```shell
 $ dnf install -y dnf-utils
 
@@ -29,6 +29,24 @@ $ systemctl enable docker
 
 # docker version check
 $ docker version
+```
+- yum install 
+```
+# yum install -y yum-utils
+# yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+# vi /etc/yum.repos.d/docker-ce.repo
+```
+docker-ce.repo 파일에 아래 내용 추가 후 저장 
+```YAML
+[centos-extras]
+name=Centos extras - $basearch
+baseurl=http://mirror.centos.org/centos/7/extras/x86_64
+enabled=1
+gpgcheck=1
+gpgkey=http://centos.org/keys/RPM-GPG-KEY-CentOS-7
+```
+```
+# yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
 
 ## docker deamon
