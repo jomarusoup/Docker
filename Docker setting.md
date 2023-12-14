@@ -3,7 +3,7 @@
 쿠버네티스 클러스트를 구성할 모든 노드에 도커 설치 및 설정 필요
 
 ## docker install
-- yum dnf 
+- dnf install
 ```shell
 $ dnf install -y dnf-utils
 
