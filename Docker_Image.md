@@ -84,4 +84,6 @@ $ docker build -t hello:1.0 -f /home/user/docker/dockerfile .
 ```shell
 # Remove build cache
 $ docker builder prune
+# 또는 이미지 생성 시점 명령어 추가
+$ docker build --no-cache -t hello:1.0 -f /home/user/docker/dockerfile .
 ```
