@@ -87,3 +87,15 @@ $ docker builder prune
 # 또는 이미지 생성 시점 명령어 추가
 $ docker build --no-cache -t hello:1.0 -f /home/user/docker/dockerfile .
 ```
+
+## Docker Image Delete
+- 이미지 삭제 명령어
+```shell
+$ docker rmi "이미지 ID"
+```
+- TAG가 <none>인 이미지 삭제
+```shell
+$ docker rmi $(docker images -f "dangling=true" -q)
+# "dangling=true" : <none>인 이미지만 필터링 해줌
+# -q : 이미지ID만 출력
+```
