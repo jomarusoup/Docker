@@ -70,9 +70,9 @@ CMD
 
 ## Docker image create
 ```shell
-$ docker build -t {Image}:{Tag} -f {Absolute_path_of_Dockerfile} .
+$ docker build -t {Image}:{Tag} -f {Absolute_path_of_Dockerfile} /
 
-$ docker build -t hello:1.0 -f /home/user/docker/dockerfile .
+$ docker build -t hello:1.0 -f /home/user/docker/dockerfile /
 ```
 - build 명령어의 끝에는 Dockerfile이 저장된 경로 입력
     - 로컬에 저장된 Dockerfile이 아닌 외부 에서 가져오는 경우 외부 URL 입력 가능
@@ -85,7 +85,7 @@ $ docker build -t hello:1.0 -f /home/user/docker/dockerfile .
 # Remove build cache
 $ docker builder prune
 # 또는 이미지 생성 시점 명령어 추가
-$ docker build --no-cache -t hello:1.0 -f /home/user/docker/dockerfile .
+$ docker build --no-cache -t hello:1.0 -f /home/user/docker/dockerfile /
 ```
 
 ## Docker Image Delete
