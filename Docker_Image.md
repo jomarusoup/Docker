@@ -73,10 +73,12 @@ CMD
 $ docker build -t {Image}:{Tag} -f {Absolute_path_of_Dockerfile} /
 
 $ docker build -t hello:1.0 -f /home/user/docker/dockerfile /
+
+# 빌드 과정을 텍스트로 출력
+$ docker build -t hello:1.0 -f /home/user/docker/dockerfile / --progress=plain
 ```
 - build 명령어의 끝에는 Dockerfile이 저장된 경로 입력
     - 로컬에 저장된 Dockerfile이 아닌 외부 에서 가져오는 경우 외부 URL 입력 가능
-
 
 ## Cache with Docker Image
 - 이미지를 빌드 이후 같은 빌드를 하면 이전의 이미지 빌드에 사용된 캐시 이용
